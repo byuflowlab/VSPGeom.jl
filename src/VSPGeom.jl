@@ -1,16 +1,16 @@
 #=
-  OpenVSP Degenerate Geometry import tool
+OpenVSP Degenerate Geometry import tool
 
-  # AUTHORSHIP
-    * Created by    : Cibin Joseph
-    * Email         : cibinjoseph92@gmail.com
-    * Date          : Jun 2023
-    * License       : MIT License
-    =#
-    module VSPGeom
-        export VSPComponent, readfile
+# AUTHORSHIP
+* Created by    : Cibin Joseph
+* Email         : cibinjoseph92@gmail.com
+* Date          : Jun 2023
+* License       : MIT License
+=#
+module VSPGeom
+export VSPComponent, readDegenGeom
 
-        using CSV, DataFrames
+using CSV, DataFrames
 
 """
     `VSPComponent()`
@@ -48,10 +48,10 @@ end
 
 # Convenience constructor
 VSPComponent(;type="", name="", SurfNdx=0, GeomID="", MainSurfNdx=0, SymCopyNdx=0,
-          surface_node=DataFrame(), surface_face=DataFrame(), plate=DataFrame(), 
-          stick_node=DataFrame(), stick_face=DataFrame(), point=DataFrame()) =
+             surface_node=DataFrame(), surface_face=DataFrame(), plate=DataFrame(), 
+             stick_node=DataFrame(), stick_face=DataFrame(), point=DataFrame()) =
 VSPComponent(type, name, SurfNdx, GeomID, MainSurfNdx, SymCopyNdx,
-          surface_node, surface_face, plate, stick_node, stick_face, point)
+             surface_node, surface_face, plate, stick_node, stick_face, point)
 
 function _addParams!(comp::VSPComponent, line::String)
     strList = split(line, ",")
@@ -137,7 +137,7 @@ function readDegenGeom(filename::String; verbose::Bool=false)
             if verbose; println("Found point $ic ..."); end
             strList = split(line, ",")
             istart = i+1
-            comp[ic].stick_face = _getCSV(lines[istart:istart+1])
+            comp[ic].point = _getCSV(lines[istart:istart+1])
         end
     end
     return comp

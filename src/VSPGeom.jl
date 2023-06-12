@@ -1,4 +1,4 @@
-"""
+#=
   OpenVSP Degenerate Geometry import tool
 
   # AUTHORSHIP
@@ -6,13 +6,36 @@
     * Email         : cibinjoseph92@gmail.com
     * Date          : Jun 2023
     * License       : MIT License
-"""
+=#
 module VSPGeom
-export Comp, readfile
+export Component, readfile
 
 import CSV
 
-mutable struct Comp
+# Todo
+# 1. Use CSV.read instead of CSV.file
+# 2. Possible to use DelimitedFiles instead of CSV?
+
+"""
+    `Component()`
+
+Parameters defining the Component.
+
+**Arguments**
+- `type::String`: Type of geometry
+- `name::String`:
+- `SurfNdx::Int`:
+- `GeomID::String`:
+- `MainSurfNdx::Int`:
+- `SymCopyNdx::Int`:
+- `surface_node`:
+- `surface_face`:
+- `plate`:
+- `stick_node`:
+- `stick_face`:
+- `point`:
+"""
+mutable struct Component
     type::String
     name::String
     SurfNdx::Int
@@ -25,10 +48,10 @@ mutable struct Comp
     stick_node
     stick_face
     point
-    Comp() = new()
+    Component() = new()
 end
 
-function _addParams!(comp::Comp, line::String)
+function _addParams!(comp::Component, line::String)
     strList = split(line, ",")
     comp.type = strList[1]
     comp.name = strList[2]
@@ -54,8 +77,8 @@ verbose=true prints out status messages during the file read operation.
 """
 function readfile(filename::String; verbose=false)
     lines = readlines(filename)
-    nComp = parse(Int, lines[4])
-    comp = Array{Comp}(undef, nComp)
+    nComponent = parse(Int, lines[4])
+    comp = Array{Component}(undef, nComponent)
 
     ic = 0
     # Parse file and extract each component and degenGeom
@@ -64,7 +87,7 @@ function readfile(filename::String; verbose=false)
             # start of a component
             ic += 1
             if verbose; println("Found component $ic ..."); end
-            comp[ic] = Comp()
+            comp[ic] = Component()
             _addParams!(comp[ic], lines[i+1])
         end
 

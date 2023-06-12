@@ -6,52 +6,54 @@
     * Email         : cibinjoseph92@gmail.com
     * Date          : Jun 2023
     * License       : MIT License
-=#
-module VSPGeom
-export Component, readfile
+    =#
+    module VSPGeom
+        export VSPComponent, readfile
 
-import CSV
-
-# Todo
-# 1. Use CSV.read instead of CSV.file
-# 2. Possible to use DelimitedFiles instead of CSV?
+        using CSV, DataFrames
 
 """
-    `Component()`
+    `VSPComponent()`
 
-Parameters defining the Component.
+Parameters defining the VSPComponent struct.
 
 **Arguments**
-- `type::String`: Type of geometry
-- `name::String`:
-- `SurfNdx::Int`:
-- `GeomID::String`:
-- `MainSurfNdx::Int`:
-- `SymCopyNdx::Int`:
-- `surface_node`:
-- `surface_face`:
-- `plate`:
-- `stick_node`:
-- `stick_face`:
-- `point`:
+- `type::String`: Type
+- `name::String`: Name
+- `SurfNdx::Int`: Surface index
+- `GeomID::String`: Geometry ID
+- `MainSurfNdx::Int`: Main surface index
+- `SymCopyNdx::Int`: Symmetry copy index
+- `surface_node::DataFrame`: Surface node DegenGeom
+- `surface_face::DataFrame`: Surface face DegenGeom
+- `plate::DataFrame`: Plate DegenGeom
+- `stick_node::DataFrame`: Stick node DegenGeom
+- `stick_face::DataFrame`: Stick face DegenGeom
+- `point::DataFrame`: Point DegenGeom
 """
-mutable struct Component
+mutable struct VSPComponent
     type::String
     name::String
     SurfNdx::Int
     GeomID::String
     MainSurfNdx::Int
     SymCopyNdx::Int
-    surface_node
-    surface_face
-    plate
-    stick_node
-    stick_face
-    point
-    Component() = new()
+    surface_node::DataFrame
+    surface_face::DataFrame
+    plate::DataFrame
+    stick_node::DataFrame
+    stick_face::DataFrame
+    point::DataFrame
 end
 
-function _addParams!(comp::Component, line::String)
+# Convenience constructor
+VSPComponent(;type="", name="", SurfNdx=0, GeomID="", MainSurfNdx=0, SymCopyNdx=0,
+          surface_node=DataFrame(), surface_face=DataFrame(), plate=DataFrame(), 
+          stick_node=DataFrame(), stick_face=DataFrame(), point=DataFrame()) =
+VSPComponent(type, name, SurfNdx, GeomID, MainSurfNdx, SymCopyNdx,
+          surface_node, surface_face, plate, stick_node, stick_face, point)
+
+function _addParams!(comp::VSPComponent, line::String)
     strList = split(line, ",")
     comp.type = strList[1]
     comp.name = strList[2]
@@ -65,20 +67,20 @@ function _getCSV(lines)
     data = join(lines[2:end], "\n")
     header = String.(split(lines[1][3:end], ","))
 
-    csvData = CSV.File(IOBuffer(data), header=header, silencewarnings=true)
+    csvData = CSV.read(IOBuffer(data), DataFrame; header=header, silencewarnings=true)
     return csvData
 end
 
 """
-    `readfile(filename::String; verbose=false )`
+    `readDegenGeom(filename::String; verbose::Bool=false )`
 
-Read DegenGeom CSV file written out by OpenVSP and obtain geometry and components.
+Read DegenGeom CSV file written out by OpenVSP to obtain geometry and components.
 verbose=true prints out status messages during the file read operation.
 """
-function readfile(filename::String; verbose=false)
+function readDegenGeom(filename::String; verbose::Bool=false)
     lines = readlines(filename)
-    nComponent = parse(Int, lines[4])
-    comp = Array{Component}(undef, nComponent)
+    nVSPComponent = parse(Int, lines[4])
+    comp = Array{VSPComponent}(undef, nVSPComponent)
 
     ic = 0
     # Parse file and extract each component and degenGeom
@@ -87,7 +89,7 @@ function readfile(filename::String; verbose=false)
             # start of a component
             ic += 1
             if verbose; println("Found component $ic ..."); end
-            comp[ic] = Component()
+            comp[ic] = VSPComponent()
             _addParams!(comp[ic], lines[i+1])
         end
 

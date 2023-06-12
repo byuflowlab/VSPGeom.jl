@@ -72,10 +72,16 @@ function _getCSV(lines)
 end
 
 """
-    `readDegenGeom(filename::String; verbose::Bool=false )`
+    `readDegenGeom(filename::String; verbose::Bool=false)`
 
 Read DegenGeom CSV file written out by OpenVSP to obtain geometry and components.
-verbose=true prints out status messages during the file read operation.
+
+**Arguments**
+- `filename::String`: DegenGeom filename
+- `verbose::Bool`: Set to `true` to print status messages during file read operation
+
+**Returns**
+- `comp`: Vector of `VSPComponent` objects
 """
 function readDegenGeom(filename::String; verbose::Bool=false)
     lines = readlines(filename)

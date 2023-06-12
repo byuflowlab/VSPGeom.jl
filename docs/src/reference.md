@@ -7,9 +7,9 @@ This section describes the API in detail.
 The Component object is defined as follows.
 
 ```@docs
-Component
+VSPComponent
 ```
 
 ```@docs
-readfile
+readDegenGeom
 ```

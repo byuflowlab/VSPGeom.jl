@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Guided Examples · VSPGeom.jl</title><script data-outdated-warner src="../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.045/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.24/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../"><img class="docs-light-only" src="../assets/logo.png" alt="VSPGeom.jl logo"/><img class="docs-dark-only" src="../assets/logo-dark.png" alt="VSPGeom.jl logo"/></a><form class="docs-search" action="../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../">Intro</a></li><li><a class="tocitem" href="../tutorial/">Quick Start</a></li><li class="is-active"><a class="tocitem" href>Guided Examples</a><ul class="internal"><li><a class="tocitem" href="#Tutorial-1"><span>Tutorial 1</span></a></li></ul></li><li><a class="tocitem" href="../reference/">API Reference</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Guided Examples</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Guided Examples</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/cibinjoseph/VSPGeom.jl" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Guided-Examples"><a class="docs-heading-anchor" href="#Guided-Examples">Guided Examples</a><a id="Guided-Examples-1"></a><a class="docs-heading-anchor-permalink" href="#Guided-Examples" title="Permalink"></a></h1><p>This section describes examples of how to use VSPGeom to import different types of geometry. It assumes familiarity with basic usage.</p><h2 id="Tutorial-1"><a class="docs-heading-anchor" href="#Tutorial-1">Tutorial 1</a><a id="Tutorial-1-1"></a><a class="docs-heading-anchor-permalink" href="#Tutorial-1" title="Permalink"></a></h2><h3 id="OpenVSP-geometry"><a class="docs-heading-anchor" href="#OpenVSP-geometry">OpenVSP geometry</a><a id="OpenVSP-geometry-1"></a><a class="docs-heading-anchor-permalink" href="#OpenVSP-geometry" title="Permalink"></a></h3><p>We start by creating a geometry in OpenVSP. Let&#39;s use the default wing geometry and write out a CSV DegenGeom file using the tab <em>Analysis</em> &gt; <em>DegenGeom</em>. <img src="../OpenVSPwing.png" alt="OpenVSPwing"/></p><h3 id="Import-to-Julia"><a class="docs-heading-anchor" href="#Import-to-Julia">Import to Julia</a><a id="Import-to-Julia-1"></a><a class="docs-heading-anchor-permalink" href="#Import-to-Julia" title="Permalink"></a></h3><p>We shall now use VSPGeom to import the DegenGeom file into Julia. We make use of the <code>readDegenGeom</code> function to read the file. We would also like to know the output that we obtained from <code>readDegenGeom</code>.</p><pre><code class="language-julia hljs">using VSPGeom
+
+comp = readDegenGeom(&quot;wing.csv&quot;)
+
+println(typeof(comp))
+println(size(comp))</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">Vector{VSPComponent}
+(2,)</code></pre><p>The various geometry components in the DegenGeom file will now be available to us in the variable <code>comp</code> which appears to be a Vector of <a href="../reference/#VSPGeom.VSPComponent"><code>VSPComponent</code></a> objects. This specific vector has two elements in it. Before we start using this object, let&#39;s inspect it using the <code>dump</code> function provided by Julia.</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; using VSPGeom</code><code class="nohighlight hljs ansi" style="display:block;"></code><br/><code class="language-julia-repl hljs" style="display:block;">julia&gt; dump(VSPComponent)</code><code class="nohighlight hljs ansi" style="display:block;">VSPComponent &lt;: Any
+  type::String
+  name::String
+  SurfNdx::Int64
+  GeomID::String
+  MainSurfNdx::Int64
+  SymCopyNdx::Int64
+  surface_node::DataFrames.DataFrame
+  surface_face::DataFrames.DataFrame
+  plate::DataFrames.DataFrame
+  stick_node::DataFrames.DataFrame
+  stick_face::DataFrames.DataFrame
+  point::DataFrames.DataFrame</code></pre><p>Besides several variables like <code>type</code>, <code>name</code>, <code>GeomID</code> etc. that describe the geometry, we notice a collection of <code>DataFrame</code> objects. These are the degenGeom representations of the geometry in the form of <code>DataFrame</code> objects. Let&#39;s inspect the <code>PLATE</code> type of representation for the first component using the <code>describe</code> function provided by the <code>DataFrames</code> package.</p><pre><code class="language- hljs">using VSPGeom, DataFrames
+
+comp = readDegenGeom(&quot;wing.csv&quot;)
+
+describe(comp[1].plate)</code></pre><p>The <code>PLATE</code> degenGeom representation for component 1 has the variables <code>x</code>, <code>y</code>, <code>z</code>, <code>zCamber</code> and so on inside it. These correspond to the right half of the OpenVSP Wing geometry. Component 2 represents the left half of the wing that lies in the negative Y-plane indicated by the negative values for <code>y</code> in its dataframe or table. We can also display a summary of only the <code>y</code> values for each of the components using the <code>cols</code> option.</p><pre><code class="language- hljs">using VSPGeom, DataFrames
+
+comp = readDegenGeom(&quot;wing.csv&quot;)
+
+println(describe(comp[1].plate, cols=&quot;y&quot;))
+println(describe(comp[2].plate, cols=&quot;y&quot;))</code></pre><h3 id="Accessing-DegenGeom-variables"><a class="docs-heading-anchor" href="#Accessing-DegenGeom-variables">Accessing DegenGeom variables</a><a id="Accessing-DegenGeom-variables-1"></a><a class="docs-heading-anchor-permalink" href="#Accessing-DegenGeom-variables" title="Permalink"></a></h3><p>Variables in the DegenGeom may now be accessed like fields in a struct as shown below. Let&#39;s create  a surface plot of the camber surface for the left and right halves of the wing geometry. We shall use the function <code>degenGeomSize</code> to obtain the mesh size and restructure the coordinate variables into a surface mesh.</p><pre><code class="language- hljs">using VSPGeom
+
+comp = readDegenGeom(&quot;wing.csv&quot;)
+
+x1 = comp[1].plate.x + comp[1].plate.zCamber .* comp[1].plate.nCamberx;
+y1 = comp[1].plate.y + comp[1].plate.zCamber .* comp[1].plate.nCambery;
+z1 = comp[1].plate.z + comp[1].plate.zCamber .* comp[1].plate.nCamberz;
+
+x2 = comp[2].plate.x + comp[2].plate.zCamber .* comp[2].plate.nCamberx;
+y2 = comp[2].plate.y + comp[2].plate.zCamber .* comp[2].plate.nCambery;
+z2 = comp[2].plate.z + comp[2].plate.zCamber .* comp[2].plate.nCamberz;
+
+# Reshape right wing to a mesh
+nx, ny = degenGeomSize(comp[1].plate)
+xr = reshape(x1, (nx, ny))
+yr = reshape(y1, (nx, ny))
+zr = reshape(z1, (nx, ny))
+
+# Reshape left wing to a mesh
+nx, ny = degenGeomSize(comp[2].plate)
+xl = reshape(x2, (nx, ny))
+yl = reshape(y2, (nx, ny))
+zl = reshape(z2, (nx, ny))
+
+using Plots
+surface(xl, yl, zl, 
+        zlims=(-4, 4), color=:blue, ma=0.5, label=&quot;Left wing&quot;, colorbar=false)
+surface!(xr, yr, zr,
+        zlims=(-4, 4), color=:red, ma=0.5, label=&quot;Right wing&quot;, colorbar=false)</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../tutorial/">« Quick Start</a><a class="docs-footer-nextpage" href="../reference/">API Reference »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.24 on <span class="colophon-date" title="Tuesday 13 June 2023 22:35">Tuesday 13 June 2023</span>. Using Julia version 1.6.7.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

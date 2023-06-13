@@ -10,7 +10,7 @@ OpenVSP has provisions to create multi-fidelity representations of geometry call
 4. Point
 Plate representations are typically used for aerodynamic solvers like a Vortex lattice solver; while stick representations are common in beam element-based structural solvers.
 ![DegenGeom](degengeom.png)
-Image from McDonald, R. A., & Gloudemans, J. R. (2022). Open Vehicle Sketch Pad: An Open Source Parametric Geometry and Analysis Tool for Conceptual Aircraft Design. In AIAA SCITECH 2022 Forum. AIAA SCITECH 2022 Forum. American Institute of Aeronautics and Astronautics.
+Image from McDonald, R. A., & Gloudemans, J. R. (2022). Open Vehicle Sketch Pad: An Open Source Parametric Geometry and Analysis Tool for Conceptual Aircraft Design. In AIAA SCITECH 2022 Forum.
 
 ## Tutorial
 Use the `readDegenGeom` function to import geometry into a [`VSPComponent`](@ref) object from the DegenGeom CSV file. Variables, like coordinates `x, y, z`, of each degenGeom are available as fields inside the VSPComponent.
@@ -35,7 +35,7 @@ z = comp[1].plate.z
 
 # Reshape wing to a mesh
 nx, ny = degenGeomSize(comp[1].plate)
-xg = reshape(x1, (nx, ny))
-yg = reshape(y1, (nx, ny))
-zg = reshape(z1, (nx, ny))
+xg = reshape(x, (nx, ny))
+yg = reshape(y, (nx, ny))
+zg = reshape(z, (nx, ny))
 ```

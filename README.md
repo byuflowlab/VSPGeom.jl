@@ -1,7 +1,7 @@
 # VSPGeom.jl
 
 [![](https://img.shields.io/badge/docs-dev-blue.svg)](https://github.com/byuflowlab/VSPGeom.jl/dev)
-![](https://github.com/byuflowlab/VSPGeom.jl/workflows/tests/badge.svg)
+![](https://github.com/byuflowlab/VSPGeom.jl/actions/workflows/test.yaml/badge.svg)
 
 **Summary**: A Julia package to import geometry generated using OpenVSP into Julia.
 

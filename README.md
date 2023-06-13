@@ -10,7 +10,7 @@
 **Installation**:
 
 ```julia
-] add VSPGeom
+pkg> add https://github.com/cibinjoseph/VSPGeom.jl.git
 ```
 
 **Documentation**:

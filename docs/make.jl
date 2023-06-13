@@ -2,7 +2,7 @@ using Documenter, VSPGeom
 
 makedocs(
          modules = [VSPGeom],
-         format = Documenter.HTML(),
+         format = Documenter.HTML(sidebar_sitename=false),
          pages = [
                   "Intro" => "index.md",
                   "Quick Start" => "tutorial.md",

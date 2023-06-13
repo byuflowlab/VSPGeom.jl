@@ -1,6 +1,6 @@
 # Quick Start
 
-This starter tutorial walks through the mechanics of importing geometry using VSPGeom.
+This starter tutorial provides a quick overview of important VSPGeom functions that help importing geometry into Julia. A detailed walkthrough of features is available in [Guided Examples](@ref).
 
 ## DegenGeom
 OpenVSP has provisions to create multi-fidelity representations of geometry called Degenerate geometry or *DegenGeom*. This is done by creating a OpenVSP geometry and clicking *Analysis* > *DegenGeom* to write out a DegenGeom file. A DegenGeom file is a collection of comma-separated tables, each representing a multi-fidelity representation of the geometry. There are primarily four types of degenerate geometry:

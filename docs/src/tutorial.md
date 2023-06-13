@@ -24,7 +24,7 @@ z = comp[1].plate.z
 ```
 
 The function `degenGeomSize` can be used to obtain the mesh size and restructure the coordinate variables into a surface mesh.
-```@example
+```@julia
 using VSPGeom
 
 comp = readDegenGeom("wing.csv")

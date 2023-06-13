@@ -12,3 +12,7 @@ makedocs(
          repo="https://github.com/cibinjoseph/VSPGeom.jl",
          sitename="VSPGeom.jl",
          authors="Cibin Joseph <cibinjoseph92@gmail.com>")
+
+deploydocs(
+    repo = "github.com/cibinjoseph/VSPGeom.jl.git",
+)

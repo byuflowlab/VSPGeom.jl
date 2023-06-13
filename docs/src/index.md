@@ -6,8 +6,7 @@
 
 **Features**:
 
-- Import and visualize Degenerate Geometry
-- Import and visualize CompGeom generated geometry
+- Import Degenerate Geometry
 
 **Installation**:
 

@@ -9,10 +9,10 @@ makedocs(
                   "Guided Examples" => "howto.md",
                   "API Reference" => "reference.md"
                  ],
-         repo="https://github.com/cibinjoseph/VSPGeom.jl",
+         repo="https://github.com/byuflowlab/VSPGeom.jl",
          sitename="VSPGeom.jl",
          authors="Cibin Joseph <cibinjoseph92@gmail.com>")
 
 deploydocs(
-    repo = "github.com/cibinjoseph/VSPGeom.jl.git",
+    repo = "github.com/byuflowlab/VSPGeom.jl.git",
 )

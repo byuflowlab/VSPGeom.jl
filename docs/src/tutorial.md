@@ -57,15 +57,29 @@ using VSPGeom, DataFrames
 
 comp = readDegenGeom("wing.csv")
 
-xR = comp[1].plate.x + comp[1].plate.zCamber .* comp[1].plate.nCamberx;
-yR = comp[1].plate.y + comp[1].plate.zCamber .* comp[1].plate.nCambery;
-zR = comp[1].plate.z + comp[1].plate.zCamber .* comp[1].plate.nCamberz;
+x1 = comp[1].plate.x + comp[1].plate.zCamber .* comp[1].plate.nCamberx;
+y1 = comp[1].plate.y + comp[1].plate.zCamber .* comp[1].plate.nCambery;
+z1 = comp[1].plate.z + comp[1].plate.zCamber .* comp[1].plate.nCamberz;
 
-xL = comp[2].plate.x + comp[2].plate.zCamber .* comp[2].plate.nCamberx;
-yL = comp[2].plate.y + comp[2].plate.zCamber .* comp[2].plate.nCambery;
-zL = comp[2].plate.z + comp[2].plate.zCamber .* comp[2].plate.nCamberz;
+x2 = comp[2].plate.x + comp[2].plate.zCamber .* comp[2].plate.nCamberx;
+y2 = comp[2].plate.y + comp[2].plate.zCamber .* comp[2].plate.nCambery;
+z2 = comp[2].plate.z + comp[2].plate.zCamber .* comp[2].plate.nCamberz;
+
+# Reshape right wing to a mesh
+nx, ny = degenGeomSize(comp[1].plate)
+xr = reshape(x1, (nx, ny))
+yr = reshape(y1, (nx, ny))
+zr = reshape(z1, (nx, ny))
+
+# Reshape left wing to a mesh
+nx, ny = degenGeomSize(comp[2].plate)
+xl = reshape(x2, (nx, ny))
+yl = reshape(y2, (nx, ny))
+zl = reshape(z2, (nx, ny))
 
 using Plots
-scatter(xL, yL, zL, zlims=(-4, 4), ma=0.5, label="Left wing")
-scatter!(xR, yR, zR, zlims=(-4, 4), ma=0.5, label="Right wing")
+surface(xl, yl, zl, 
+        zlims=(-4, 4), color=:blue, ma=0.5, label="Left wing", colorbar=false)
+surface!(xr, yr, zr,
+        zlims=(-4, 4), color=:red, ma=0.5, label="Right wing", colorbar=false)
 ```

@@ -8,14 +8,14 @@ OpenVSP Degenerate Geometry import tool
 * License       : MIT License
 =#
 module VSPGeom
-export VSPComponent, readDegenGeom
+export VSPComponent, readDegenGeom, degenGeomSize
 
 using CSV, DataFrames
 
 """
-    `VSPComponent()`
+    VSPComponent()
 
-Parameters defining the VSPComponent struct.
+Parameters defining the VSPComponent object.
 
 **Arguments**
 - `type::String`: Type
@@ -63,16 +63,37 @@ function _addParams!(comp::VSPComponent, line::String)
     comp.SymCopyNdx = parse(Int, strList[6])
 end
 
-function _getCSV(lines)
-    data = join(lines[2:end], "\n")
-    header = String.(split(lines[1][3:end], ","))
+function _getCSV(lines, istart::Int, nx::Int, ny::Int)
+    iend = istart + nx*ny
+    data = join(lines[istart+1:iend], "\n")
+    header = String.(split(lines[istart][3:end], ","))
 
     csvData = CSV.read(IOBuffer(data), DataFrame; header=header, silencewarnings=true)
+    metadata!(csvData, "nx", nx)
+    metadata!(csvData, "ny", ny)
     return csvData
 end
 
 """
-    `readDegenGeom(filename::String; verbose::Bool=false)`
+    degenGeomSize(degenGeom::DataFrame)
+
+Get size of the 2d mesh data structure that describes the degenerate geometry. This is different from the DataFrame size obtained using `size(degenGeom)` which is the number of variables and total number of points in the DataFrame.
+
+**Arguments**
+- `degenGeom::DataFrame`: One of the degenGeom inside the [`VSPComponent`](@ref) object
+
+**Returns**
+- `nx::Int`: Usually represents the number of cross-sections, referred to as Xsecs in OpenVSP
+- `ny::Int`: Usually represents the number of points in each cross-section in OpenVSP
+"""
+function degenGeomSize(degenGeom::DataFrame)
+    nx = metadata(degenGeom, "nx")
+    ny = metadata(degenGeom, "ny")
+    return nx, ny
+end
+
+"""
+    readDegenGeom(filename::String; verbose::Bool=false)
 
 Read DegenGeom CSV file written out by OpenVSP to obtain geometry and components.
 
@@ -81,7 +102,7 @@ Read DegenGeom CSV file written out by OpenVSP to obtain geometry and components
 - `verbose::Bool`: Set to `true` to print status messages during file read operation
 
 **Returns**
-- `comp`: Vector of `VSPComponent` objects
+- `comp`: Vector of [`VSPComponent`](@ref) objects
 """
 function readDegenGeom(filename::String; verbose::Bool=false)
     lines = readlines(filename)
@@ -104,7 +125,7 @@ function readDegenGeom(filename::String; verbose::Bool=false)
             strList = split(line, ",")
             nx, np = parse.(Int, strList[2:3])
             istart = i+1
-            comp[ic].surface_node = _getCSV(lines[istart:istart+nx*np])
+            comp[ic].surface_node = _getCSV(lines, istart, nx, np)
         end
 
         if occursin("SURFACE_FACE", line)
@@ -112,7 +133,7 @@ function readDegenGeom(filename::String; verbose::Bool=false)
             strList = split(line, ",")
             nx, np = parse.(Int, strList[2:3])
             istart = i+1
-            comp[ic].surface_face = _getCSV(lines[istart:istart+nx*np])
+            comp[ic].surface_face = _getCSV(lines, istart, nx, np)
         end
 
         if occursin("PLATE", line)
@@ -120,30 +141,32 @@ function readDegenGeom(filename::String; verbose::Bool=false)
             strList = split(line, ",")
             nx, np = parse.(Int, strList[2:3])
             istart = i+2+nx
-            comp[ic].plate = _getCSV(lines[istart:istart+nx*np])
+            comp[ic].plate = _getCSV(lines, istart, nx, np)
         end
 
         if occursin("STICK_NODE", line)
             if verbose; println("Found stick_node $ic ..."); end
             strList = split(line, ",")
-            nx = parse.(Int, strList[2])
+            nx, np = (parse.(Int, strList[2]), 1)
             istart = i+1
-            comp[ic].stick_node = _getCSV(lines[istart:istart+nx])
+            comp[ic].stick_node = _getCSV(lines, istart, nx, np)
         end
 
         if occursin("STICK_FACE", line)
             if verbose; println("Found stick_face $ic ..."); end
             strList = split(line, ",")
             nx = parse.(Int, strList[2])
+            np = 1
             istart = i+1
-            comp[ic].stick_face = _getCSV(lines[istart:istart+nx])
+            comp[ic].stick_face = _getCSV(lines, istart, nx, np)
         end
 
         if occursin("POINT", line)
             if verbose; println("Found point $ic ..."); end
             strList = split(line, ",")
+            nx, np = (1, 1)
             istart = i+1
-            comp[ic].point = _getCSV(lines[istart:istart+1])
+            comp[ic].point = _getCSV(lines, istart, nx, np)
         end
     end
     return comp

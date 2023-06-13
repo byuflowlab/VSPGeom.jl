@@ -1,6 +1,7 @@
 # VSPGeom.jl
 
-[![](https://img.shields.io/badge/docs-stable-blue.svg)](https://github.com/cibinjoseph/VSPGeom.jl/stable)
+[![](https://img.shields.io/badge/docs-stable-blue.svg)](https://github.com/cibinjoseph/VSPGeom.jl/dev)
+![](https://github.com/byuflowlab/CCBlade.jl/workflows/Run%20tests/badge.svg)
 
 **Summary**: A Julia package to import geometry generated using OpenVSP into Julia.
 
@@ -14,7 +15,7 @@
 
 **Documentation**:
 
-The [documentation](https://github.com/cibinjoseph/VSPGeom.jl/stable) contains
+The [documentation](https://github.com/cibinjoseph/VSPGeom.jl/dev) contains
 - A quick start tutorial to learn basic usage,
 - Guided examples to address specific or more advanced tasks,
 - A reference describing the API.

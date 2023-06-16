@@ -13,5 +13,9 @@ readDegenGeom
 ```
 
 ```@docs
+readSTL
+```
+
+```@docs
 degenGeomSize
 ```

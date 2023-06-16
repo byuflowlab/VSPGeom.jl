@@ -2,7 +2,7 @@
 
 This section describes examples of how to use VSPGeom to import different types of geometry. It assumes familiarity with basic usage.
 
-## Tutorial 1
+## DegenGeom Files
 ### OpenVSP geometry 
 We start by creating a geometry in OpenVSP. Let's use the default wing geometry and write out a CSV DegenGeom file using the tab *Analysis* > *DegenGeom*.
 ![OpenVSPwing](OpenVSPwing.png)
@@ -62,4 +62,37 @@ surface(xl, yl, zl, zlims=(-4, 4),
 surface!(xr, yr, zr,
         color=:red, label="Right wing", colorbar=false,
         camera=(20, 30), aspect_ratio=1, proj_type=:persp)
+```
+
+## STL Files
+### OpenVSP geometry 
+In addition to the DegenGeom file format, OpenVSP has the capability to generate unstructured triangular element meshes of geometry and write out ASCII STL mesh files. These files may contain a single solid or multiple named solids. Opting for the "Tagged Multi Solid File (non standard)" option during mesh export enables the ability to manipulate each component geometry individually.
+![OpenVSPSTLExport](taggedmulti.png)
+
+### Import to Julia
+We shall use the [`readSTL`](@ref) function in VSPGeom to import the geometry from the STL file.
+```@example 2
+using VSPGeom
+
+geom = readSTL("aircraft.stl")
+
+println(typeof(geom))
+println(size(geom))
+```
+Similar to the `readDegenGeom` function, `readSTL` also returns an array of mesh geometry objects.
+
+### Accessing STL mesh variabels
+The vertices, normals and cells in this mesh object may be accessed as shown below.
+```@example 2
+nVertices = size(geom[1].position)
+println("No. of vertices = $nVertices")
+
+nNormals = size(geom[1].normals)
+println("No. of normals = $nNormals")
+
+n = 5
+println("3 vertices of cell $n:")
+println(geom[1][n].points[1])
+println(geom[1][n].points[2])
+println(geom[1][n].points[3])
 ```

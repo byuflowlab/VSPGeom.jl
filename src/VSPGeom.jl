@@ -176,7 +176,7 @@ end
 """
     readSTL(filename::String; verbose::Bool=false, binaryFormat::Bool=false)
 
-Read STL file to obtain geometry. This function can also handle the non-standard Tagged Multi Solid file type that OpenVSP writes out.
+Read STL file to obtain geometry. This function can also handle the non-standard Tagged Multi Solid file type that OpenVSP writes out. Connectivity information for the mesh is not available at present.
 
 **Arguments**
 - `filename::String`: STL filename

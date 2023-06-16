@@ -96,3 +96,6 @@ println(geom[1][n].points[1])
 println(geom[1][n].points[2])
 println(geom[1][n].points[3])
 ```
+
+!!! note "STL Connectivity"
+    The mesh output from `readSTL` does not have connectivity information at the time being.

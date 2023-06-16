@@ -1,7 +1,7 @@
 using VSPGeom
 using Test
 
-@testset "1-component file" begin
+@testset "1-component DegenGeom file" begin
     compList = readDegenGeom("geom1.csv"; verbose=false)
     comp = compList[1]
 
@@ -33,7 +33,7 @@ using Test
     @test degenGeomSize(comp.point) == (1, 1)
 end
 
-@testset "2-component file" begin
+@testset "2-component DegenGeom file" begin
     comp = readDegenGeom("geom2.csv"; verbose=false)
 
     @test length(comp) == 2
@@ -87,4 +87,61 @@ end
 
     @test size(comp[2].point) == (1, 22)
     @test degenGeomSize(comp[2].point) == (1, 1)
+end
+
+@testset "1-component STL file" begin
+    geom = readSTL("cube.stl")
+
+    @test length(geom) == 1
+
+    # Check a few vertices
+    @test geom[1].position[1] ≈ [0.0, 0.0, 0.0]
+    @test geom[1].position[3] ≈ [1.0, 0.0, 0.0]
+    @test geom[1].position[end-2] ≈ [0.0, 0.0, 1.0]
+    @test geom[1].position[end] ≈ [0.0, 1.0, 1.0]
+
+    # Check a few normals
+    @test geom[1].normals[1] ≈ [0.0, 0.0, -1.0]
+    @test geom[1].normals[end] ≈ [0.0, 0.0, 1.0]
+
+    # Check vetices of a cell
+    @test geom[1][5].points[1] ≈ [0.0, 1.0, 0.0]
+    @test geom[1][5].points[2] ≈ [1.0, 1.0, 1.0]
+    @test geom[1][5].points[3] ≈ [1.0, 1.0, 0.0]
+end
+
+@testset "2-component STL file" begin
+    geom = readSTL("geom2.stl")
+
+    @test length(geom) == 2
+
+    # Check a few vertices
+    @test geom[1].position[1] ≈ [11.7636, 1.22787, -0.282198]
+    @test geom[1].position[3] ≈ [11.4687, 1.2176, -0.340498]
+    @test geom[1].position[end-2] ≈ [21.2149, 1.09203, 0.730005]
+    @test geom[1].position[end] ≈ [21.5042, 1.07642, 0.762578]
+
+    # Check a few normals
+    @test geom[1].normals[1] ≈ [0.013477, 0.970861, -0.239264]
+    @test geom[1].normals[end] ≈ [-0.00752691, 0.874019, 0.485833]
+
+    # Check vertices of a cell
+    @test geom[1][17].points[1] ≈ [12.8589, 0.490134, -1.38012]
+    @test geom[1][17].points[2] ≈ [12.8557, 0.238678, -1.47264]
+    @test geom[1][17].points[3] ≈ [12.6587, 0.378501, -1.42989]
+
+    # Check a few vertices
+    @test geom[2].position[1] ≈ [15.4337, 1.55734, -0.360698]
+    @test geom[2].position[3] ≈ [15.7579, 1.81622, -0.347975]
+    @test geom[2].position[end-2] ≈ [19.4921, 12.9635, 2.88386f-19]
+    @test geom[2].position[end] ≈ [19.6233, 12.9635, -1.01573f-17]
+
+    # Check a few normals
+    @test geom[2].normals[1] ≈ [0.0214371, 0.0222755, -0.999522]
+    @test geom[2].normals[end] ≈ [-0.0, 1.0, 0.0]
+
+    # Check vertices of a cell
+    @test geom[2][17].points[1] ≈ [18.2998, 1.24046, -0.186022]
+    @test geom[2][17].points[2] ≈ [18.516, 1.58054, -0.166472]
+    @test geom[2][17].points[3] ≈ [18.5552, 1.24274, -0.162491]
 end

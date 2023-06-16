@@ -8,9 +8,10 @@ OpenVSP Degenerate Geometry import tool
 * License       : MIT License
 =#
 module VSPGeom
-export VSPComponent, readDegenGeom, degenGeomSize
+export VSPComponent, readDegenGeom, degenGeomSize, readSTL
 
 using CSV, DataFrames
+using FileIO: load, File, Stream, DataFormat
 
 """
     VSPComponent()
@@ -170,5 +171,47 @@ function readDegenGeom(filename::String; verbose::Bool=false)
         end
     end
     return comp
+end
+
+"""
+    readSTL(filename::String; verbose::Bool=false, binaryFormat::Bool=false)
+
+Read STL file to obtain geometry. This function can also handle the non-standard Tagged Multi Solid file type that OpenVSP writes out.
+
+**Arguments**
+- `filename::String`: STL filename
+- `verbose::Bool`: Set to `true` to print status messages during file read operation
+- `binaryFormat::Bool`: Set to `true` if the STL file is of binary format
+
+**Returns**
+- `geom`: Vector of `GeometryBasics.Mesh` objects from the ['Geometrybasics.jl'](https://juliageometry.github.io/GeometryBasics.jl/stable/) package
+"""
+function readSTL(filename::String; verbose::Bool=false, binaryFormat::Bool=false)
+    geom = []
+    if binaryFormat
+        mesh = load(File{DataFormat{:STL_BINARY}}(filename))
+        if verbose; println("Found geometry 1"); end
+        push!(geom, mesh)
+    else
+        lines = readlines(filename)
+        solidEnd = Vector{Int}(undef, 0)
+
+        # Search for instances of "endsolid" inside the file to obtain geometry
+        ig = 0
+        istart = 1
+        for (i, line) in enumerate(lines)
+            if occursin("endsolid", line)
+                data = join(lines[istart:i], "\n")
+                mesh = load(Stream{DataFormat{:STL_ASCII}}(IOBuffer(data)))
+                push!(geom, mesh)
+
+                ig += 1
+                if verbose; println("Found geometry $ig"); end
+
+                istart = i + 1
+            end
+        end
+        return geom
+    end
 end
 end

@@ -79,23 +79,24 @@ geom = readSTL("aircraft.stl")
 println(typeof(geom))
 println(size(geom))
 ```
-Similar to the `readDegenGeom` function, `readSTL` also returns an array of mesh geometry objects.
+Similar to the `readDegenGeom` function, `readSTL` also returns an array of [`TriMesh`](@ref) geometry objects.
 
 ### Accessing STL mesh variabels
-The vertices, normals and cells in this mesh object may be accessed as shown below.
+The vertices of each cell are stored using the connectivity information in the [`TriMesh`](@ref) object. A *unique* list of vertices are populated in `TriMesh.points`. `TriMesh.cells` stores the vertices of each cell using indices. Each index refers to the corresponding point in `TriMesh.points`. The indices start from `0` as prescribed in the STL standard.
+The vertices and normals of cells in the [`TriMesh`](@ref) object may be accessed as shown below.
 ```@example 2
-nVertices = size(geom[1].position)
-println("No. of vertices = $nVertices")
+ncells = geom[1].ncells
+println("No. of cells = $ncells")
 
-nNormals = size(geom[1].normals)
-println("No. of normals = $nNormals")
-
+# An arbitrary cell
 n = 5
-println("3 vertices of cell $n:")
-println(geom[1][n].points[1])
-println(geom[1][n].points[2])
-println(geom[1][n].points[3])
-```
 
-!!! note "STL Connectivity"
-    The mesh output from `readSTL` does not have connectivity information at the time being.
+println("Normal of cell $n:")
+println(geom[1].normals[n])
+
+vtxs = getVertices(geom[1], n)
+println("3 vertices of cell $n:")
+println(vtxs[1])
+println(vtxs[1])
+println(vtxs[1])
+```

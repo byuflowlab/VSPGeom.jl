@@ -14,13 +14,13 @@ export TriMesh, readSTL, getVertices
 using CSV, DataFrames
 
 """
-    VSPComponent()
+    VSPComponent(name::String)
 
 Parameters defining the VSPComponent object.
 
 **Arguments**
-- `type::String`: Type
 - `name::String`: Name
+- `type::String`: Type
 - `SurfNdx::Int`: Surface index
 - `GeomID::String`: Geometry ID
 - `MainSurfNdx::Int`: Main surface index
@@ -32,11 +32,11 @@ Parameters defining the VSPComponent object.
 - `stick_face::DataFrame`: Stick face DegenGeom
 - `point::DataFrame`: Point DegenGeom
 """
-struct VSPComponent
+mutable struct VSPComponent
     name::String
     type::String
-    SurfNdx::Int
     GeomID::String
+    SurfNdx::Int
     MainSurfNdx::Int
     SymCopyNdx::Int
     surface_node::DataFrame
@@ -47,6 +47,14 @@ struct VSPComponent
     point::DataFrame
 end
 
+"""
+    TriMesh(name::String)
+- `name::String`: Name
+- `ncells::Int`: No. of cells
+- `normals::Vector{Vector{Float64}}`: Vector of normals for each cell
+- `points::Vector{Vector{Float64}}`: Vector of unique points
+- `cells::Vector{Vector{Int}}`: Vector of vertices for each cell as indices of `points`
+"""
 struct TriMesh
     name::String
     ncells::Int
@@ -56,21 +64,25 @@ struct TriMesh
 end
 
 # Convenience constructors
-VSPComponent(name; type="", SurfNdx=0, GeomID="", MainSurfNdx=0, SymCopyNdx=0,
+VSPComponent(name, type, GeomID, SurfNdx, MainSurfNdx, SymCopyNdx;
              surface_node=DataFrame(), surface_face=DataFrame(), plate=DataFrame(), 
              stick_node=DataFrame(), stick_face=DataFrame(), point=DataFrame()) =
-VSPComponent(name, type, SurfNdx, GeomID, MainSurfNdx, SymCopyNdx,
+VSPComponent(name, type, GeomID, SurfNdx, MainSurfNdx, SymCopyNdx,
              surface_node, surface_face, plate, stick_node, stick_face, point)
 
 TriMesh(name, ncells, normals; points=[], cells=[]) =
 TriMesh(name, ncells, normals, points, cells)
 
-function _addParams!(comp::VSPComponent, words)
-    comp.type = String(words[1])
-    comp.SurfNdx = parse(Int, words[3])
-    comp.GeomID = String(words[4])
-    comp.MainSurfNdx = parse(Int, words[5])
-    comp.SymCopyNdx = parse(Int, words[6])
+function _createVSPComponent(line::String)
+    words = split(line, ",")
+    type = String(words[1])
+    name = String(words[2])
+    GeomID = String(words[4])
+    SurfNdx = parse(Int, words[3])
+    MainSurfNdx = parse(Int, words[5])
+    SymCopyNdx = parse(Int, words[6])
+    comp = VSPComponent(name, type, GeomID, SurfNdx, MainSurfNdx, SymCopyNdx)
+    return comp
 end
 
 function _getCSV(lines, istart::Int, nx::Int, ny::Int)
@@ -209,9 +221,7 @@ function readDegenGeom(filename::String; verbose::Bool=false)
             # start of a component
             ic += 1
             if verbose; println("Found component $ic ..."); end
-            words = split(lines[i+1], ",")
-            comp[ic] = VSPComponent(String(words[2]))
-            _addParams!(comp[ic], words)
+            comp[ic] = _createVSPComponent(lines[i+1])
         end
 
         if occursin("SURFACE_NODE", line)
@@ -280,7 +290,7 @@ Read STL file to obtain geometry. This function can also handle the non-standard
 - `geom`: Vector of `GeometryBasics.Mesh` objects from the ['Geometrybasics.jl'](https://juliageometry.github.io/GeometryBasics.jl/stable/) package
 """
 function readSTL(filename::String; verbose::Bool=false, tol::Float64=eps(Float64))
-    geom = []
+    geom = Vector{TriMesh}()
     lines = readlines(filename)
     solidEnd = Vector{Int}(undef, 0)
 
@@ -309,10 +319,10 @@ Obtain vertices of a cell from a mesh
 
 **Arguments**
 - `mesh::TriMesh`: [`TriMesh`](@ref) object
-- `icell::Int`: Index of cell
+- `icell::Int`: Index of queried cell
 
 **Returns**
-- `vtxs`: Vector of 3 vertices of the icell cell
+- `vtxs`: Vector containing the 3 vertices of the queried cell
 """
 function getVertices(mesh::TriMesh, icell::Int)
     vtxs = [Vector{Float64}(undef, 3) for _ in 1:3]

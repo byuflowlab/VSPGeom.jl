@@ -5,7 +5,7 @@ This section describes examples of how to use VSPGeom to import different types 
 ## DegenGeom Files
 ### OpenVSP geometry 
 We start by creating a geometry in OpenVSP. Let's use the default wing geometry and write out a CSV DegenGeom file using the tab *Analysis* > *DegenGeom*.
-![OpenVSPwing](OpenVSPwing.png)
+![OpenVSPwing](assets/OpenVSPwing.png)
 
 ### Import to Julia
 We shall now use VSPGeom to import the DegenGeom file into Julia. We make use of the `readDegenGeom` function to read the file. We would also like to know the output that we obtained from `readDegenGeom`.
@@ -67,7 +67,7 @@ surface!(xr, yr, zr,
 ## STL Files
 ### OpenVSP geometry 
 In addition to the DegenGeom file format, OpenVSP has the capability to generate unstructured triangular element meshes of geometry and write out ASCII STL mesh files. These files may contain a single solid or multiple named solids. Opting for the "Tagged Multi Solid File (non standard)" option during mesh export enables the ability to manipulate each component geometry individually.
-![OpenVSPSTLExport](taggedmulti.png)
+![OpenVSPSTLExport](assets/taggedmulti.png)
 
 ### Import to Julia
 We shall use the [`readSTL`](@ref) function in VSPGeom to import the geometry from the STL file.

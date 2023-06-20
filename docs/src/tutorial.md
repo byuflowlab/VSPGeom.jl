@@ -9,7 +9,7 @@ OpenVSP has provisions to create multi-fidelity representations of geometry call
 3. Stick
 4. Point
 Plate representations are typically used for aerodynamic solvers like a Vortex lattice solver; while stick representations are common in beam element-based structural solvers.
-![DegenGeom](degengeom.png)
+![DegenGeom](assets/degengeom.png)
 Image from McDonald, R. A., & Gloudemans, J. R. (2022). Open Vehicle Sketch Pad: An Open Source Parametric Geometry and Analysis Tool for Conceptual Aircraft Design. In AIAA SCITECH 2022 Forum.
 
 ## Tutorial

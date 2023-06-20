@@ -6,7 +6,9 @@
 
 **Features**:
 
-- Import Degenerate Geometry
+- Import geometry from OpenVSP DegenGeom file
+- Import geometry from ASCII STL file
+- Import geometry from OpenVSP Tagged Multi solid STL file
 
 **Installation**:
 

@@ -5,6 +5,12 @@
 
 **Summary**: A Julia package to import geometry generated using OpenVSP into Julia.
 
+**Features**
+
+- Import geometry from OpenVSP DegenGeom file
+- Import geometry from ASCII STL file
+- Import geometry from OpenVSP Tagged Multi solid STL file
+
 **Author**: Cibin Joseph
 
 **Installation**:

@@ -81,7 +81,7 @@ println(size(geom))
 ```
 Similar to the `readDegenGeom` function, `readSTL` also returns an array of [`TriMesh`](@ref) geometry objects.
 
-### Accessing STL mesh variabels
+### Accessing STL mesh variables
 The vertices of each cell are stored using the connectivity information in the [`TriMesh`](@ref) object. A *unique* list of vertices are populated in `TriMesh.points`. `TriMesh.cells` stores the vertices of each cell using indices. Each index refers to the corresponding point in `TriMesh.points`. The indices start from `0` as prescribed in the STL standard.
 The vertices and normals of cells in the [`TriMesh`](@ref) object may be accessed as shown below.
 ```@example 2

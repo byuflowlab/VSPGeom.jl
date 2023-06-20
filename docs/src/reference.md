@@ -4,7 +4,7 @@ This section describes the API in detail.
 
 ## Main Struct
 
-### DegenGeom functions
+### DegenGeom
 ```@docs
 VSPComponent
 ```
@@ -17,7 +17,7 @@ readDegenGeom
 degenGeomSize
 ```
 
-### STL functions
+### STL
 ```@docs
 TriMesh
 ```

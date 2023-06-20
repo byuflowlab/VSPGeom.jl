@@ -21,8 +21,8 @@ Parameters defining the VSPComponent object.
 **Arguments**
 - `name::String`: Name
 - `type::String`: Type
-- `SurfNdx::Int`: Surface index
 - `GeomID::String`: Geometry ID
+- `SurfNdx::Int`: Surface index
 - `MainSurfNdx::Int`: Main surface index
 - `SymCopyNdx::Int`: Symmetry copy index
 - `surface_node::DataFrame`: Surface node DegenGeom
@@ -64,7 +64,7 @@ struct TriMesh
 end
 
 # Convenience constructors
-VSPComponent(name, type, GeomID, SurfNdx, MainSurfNdx, SymCopyNdx;
+VSPComponent(name; type="", GeomID="", SurfNdx=0, MainSurfNdx=0, SymCopyNdx=0,
              surface_node=DataFrame(), surface_face=DataFrame(), plate=DataFrame(), 
              stick_node=DataFrame(), stick_face=DataFrame(), point=DataFrame()) =
 VSPComponent(name, type, GeomID, SurfNdx, MainSurfNdx, SymCopyNdx,
@@ -75,13 +75,15 @@ TriMesh(name, ncells, normals, points, cells)
 
 function _createVSPComponent(line::String)
     words = split(line, ",")
-    type = String(words[1])
     name = String(words[2])
-    GeomID = String(words[4])
-    SurfNdx = parse(Int, words[3])
-    MainSurfNdx = parse(Int, words[5])
-    SymCopyNdx = parse(Int, words[6])
-    comp = VSPComponent(name, type, GeomID, SurfNdx, MainSurfNdx, SymCopyNdx)
+
+    comp = VSPComponent(name)
+
+    comp.type = String(words[1])
+    comp.GeomID = String(words[4])
+    comp.SurfNdx = parse(Int, words[3])
+    comp.MainSurfNdx = parse(Int, words[5])
+    comp.SymCopyNdx = parse(Int, words[6])
     return comp
 end
 

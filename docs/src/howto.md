@@ -97,6 +97,6 @@ println(geom[1].normals[n])
 vtxs = getVertices(geom[1], n)
 println("3 vertices of cell $n:")
 println(vtxs[1])
-println(vtxs[1])
-println(vtxs[1])
+println(vtxs[2])
+println(vtxs[3])
 ```

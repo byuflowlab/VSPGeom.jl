@@ -109,6 +109,44 @@ end
     @test vtxs[1] ≈ [0.0, 1.0, 0.0]
     @test vtxs[2] ≈ [1.0, 1.0, 1.0]
     @test vtxs[3] ≈ [1.0, 1.0, 0.0]
+
+    # Check indexing
+    @test geom[1].cells[1] == [1, 2, 3]
+    @test geom[1].cells[end] == [6, 7, 5]
+
+    # setZeroBased!(geom[1]; value=true)
+    # @test geom[1].cells[1] == [0, 1, 2]
+    # @test geom[1].cells[end] == [5, 6, 4]
+end
+
+@testset "1-component STL file 0-idx" begin
+    geom = readSTL("cube.stl"; zeroBased=true)
+
+    @test length(geom) == 1
+
+    # Check a few vertices
+    @test geom[1].points[1] ≈ [0.0, 0.0, 0.0]
+    @test geom[1].points[3] ≈ [1.0, 0.0, 0.0]
+    @test geom[1].points[end-2] ≈ [0.0, 0.0, 1.0]
+    @test geom[1].points[end] ≈ [1.0, 0.0, 1.0]
+
+    # Check a few normals
+    @test geom[1].normals[1] ≈ [0.0, 0.0, -1.0]
+    @test geom[1].normals[end] ≈ [0.0, 0.0, 1.0]
+
+    # Check vertices of a cell
+    vtxs = getVertices(geom[1], 5)
+    @test vtxs[1] ≈ [0.0, 1.0, 0.0]
+    @test vtxs[2] ≈ [1.0, 1.0, 1.0]
+    @test vtxs[3] ≈ [1.0, 1.0, 0.0]
+
+    # Check indexing
+    @test geom[1].cells[1] == [0, 1, 2]
+    @test geom[1].cells[end] == [5, 6, 4]
+
+    # setZeroBased!(geom[1]; value=false)
+    # @test geom[1].cells[1] == [1, 2, 3]
+    # @test geom[1].cells[end] == [6, 7, 5]
 end
 
 @testset "2-component STL file      " begin

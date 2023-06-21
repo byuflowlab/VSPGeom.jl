@@ -52,6 +52,7 @@ end
 - `name::String`: Name
 - `ncells::Int`: No. of cells
 - `normals::Vector{Vector{Float64}}`: Vector of normals for each cell
+- `zeroBased::Bool`: If true, indices in connectivity information have zero-based indexing
 - `points::Vector{Vector{Float64}}`: Vector of unique points
 - `cells::Vector{Vector{Int}}`: Vector of vertices for each cell as indices of `points`
 """
@@ -59,6 +60,7 @@ struct TriMesh
     name::String
     ncells::Int
     normals::Vector{Vector{Float64}}
+    zeroBased::Bool
     points::Vector{Vector{Float64}}
     cells::Vector{Vector{Int}}
 end
@@ -70,8 +72,8 @@ VSPComponent(name; type="", GeomID="", SurfNdx=0, MainSurfNdx=0, SymCopyNdx=0,
 VSPComponent(name, type, GeomID, SurfNdx, MainSurfNdx, SymCopyNdx,
              surface_node, surface_face, plate, stick_node, stick_face, point)
 
-TriMesh(name, ncells, normals; points=[], cells=[]) =
-TriMesh(name, ncells, normals, points, cells)
+TriMesh(name, ncells, normals, zeroBased; points=[], cells=[]) =
+TriMesh(name, ncells, normals, zeroBased, points, cells)
 
 function _createVSPComponent(line::String)
     words = split(line, ",")
@@ -157,13 +159,13 @@ function _getIndx(p, points; tol=eps(Float64))
             break
         end
     end
-    # Return 0-indexed index
-    return idx-1
+    return idx
 end
 
-function _dataToMesh(name::String, vertices, normals; tol::Float64=eps(Float64))
+function _dataToMesh(name::String, vertices, normals; tol::Float64=eps(Float64),
+        zeroBased::Bool=false)
     ncells = length(normals)
-    mesh = TriMesh(name, ncells, normals)
+    mesh = TriMesh(name, ncells, normals, zeroBased)
     # Get list of unique points
     for p in vertices
         if !_isinside(p, mesh.points, tol)
@@ -176,6 +178,9 @@ function _dataToMesh(name::String, vertices, normals; tol::Float64=eps(Float64))
         idx[1] = _getIndx(vertices[j-2], mesh.points; tol=tol)
         idx[2] = _getIndx(vertices[j-1], mesh.points; tol=tol)
         idx[3] = _getIndx(vertices[j  ], mesh.points; tol=tol)
+        if zeroBased
+            idx = idx .- 1
+        end
         push!(mesh.cells, deepcopy(idx))
     end
     return mesh
@@ -279,7 +284,7 @@ function readDegenGeom(filename::String; verbose::Bool=false)
 end
 
 """
-    readSTL(filename::String; verbose::Bool=false, tol::Float64=eps(Float64))
+    readSTL(filename::String; verbose::Bool=false, tol::Float64=eps(Float64), zeroBased::Bool=false)
 
 Read STL file to obtain geometry. This function can also handle the non-standard Tagged Multi Solid file type that OpenVSP writes out. Connectivity information for the mesh is not available at present.
 
@@ -287,11 +292,13 @@ Read STL file to obtain geometry. This function can also handle the non-standard
 - `filename::String`: STL filename
 - `verbose::Bool`: Set to `true` to print status messages during file read operation
 - `tol::Float64`: Set absolute tolerance when comparing points to obtain connectivity
+- `zeroBased::Bool`: Set true to use [zero-based numbering](https://en.wikipedia.org/wiki/Zero-based_numbering) for indices in connectivity information
 
 **Returns**
 - `geom`: Vector of `GeometryBasics.Mesh` objects from the ['Geometrybasics.jl'](https://juliageometry.github.io/GeometryBasics.jl/stable/) package
 """
-function readSTL(filename::String; verbose::Bool=false, tol::Float64=eps(Float64))
+function readSTL(filename::String; verbose::Bool=false,
+        tol::Float64=eps(Float64), zeroBased::Bool=false)
     geom = Vector{TriMesh}()
     lines = readlines(filename)
     solidEnd = Vector{Int}(undef, 0)
@@ -302,7 +309,7 @@ function readSTL(filename::String; verbose::Bool=false, tol::Float64=eps(Float64
     for (i, line) in enumerate(lines)
         if occursin("endsolid", line)
             name, vertices, normals = _getSTLdata(lines[istart:i])
-            mesh = _dataToMesh(name, vertices, normals; tol=tol)
+            mesh = _dataToMesh(name, vertices, normals; tol=tol, zeroBased=zeroBased)
             push!(geom, mesh)
 
             ig += 1
@@ -329,9 +336,30 @@ Obtain vertices of a cell from a mesh
 function getVertices(mesh::TriMesh, icell::Int)
     vtxs = [Vector{Float64}(undef, 3) for _ in 1:3]
     idxs = mesh.cells[icell]
+    idxOffset = mesh.zeroBased ? 1 : 0
     for i in 1:3
-        vtxs[i] = mesh.points[idxs[i]+1]
+        vtxs[i] = mesh.points[idxs[i]+idxOffset]
     end
     return vtxs
 end
+
+# The following function will only work if TriMesh is mutable
+# """
+#     setZeroBased!(mesh::TriMesh; zeroBased::Bool=true)
+#
+# Set connectivity information to be 0 or 1 based numbering.
+#
+# **Arguments**
+# - `mesh::TriMesh`: [`TriMesh`](@ref) object
+# - `value::Bool`: Value of the variable zeroBased. Set `true` to use zero-based numbering
+# """
+# function setZeroBased!(mesh::TriMesh; value::Bool=true)
+#     if mesh.zeroBased != value
+#         idxOffset = value ? -1 : 1
+#         for i in 1:length(mesh.cells)
+#             mesh.cells[i] = mesh.cells[i] .+ idxOffset
+#         end
+#         mesh.zeroBased = value
+#     end
+# end
 end

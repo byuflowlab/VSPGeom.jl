@@ -29,3 +29,7 @@ readSTL
 ```@docs
 getVertices
 ```
+
+```@docs
+setZeroBased!
+```

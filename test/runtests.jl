@@ -114,9 +114,9 @@ end
     @test geom[1].cells[1] == [1, 2, 3]
     @test geom[1].cells[end] == [6, 7, 5]
 
-    # setZeroBased!(geom[1]; value=true)
-    # @test geom[1].cells[1] == [0, 1, 2]
-    # @test geom[1].cells[end] == [5, 6, 4]
+    setZeroBased!(geom[1]; value=true)
+    @test geom[1].cells[1] == [0, 1, 2]
+    @test geom[1].cells[end] == [5, 6, 4]
 end
 
 @testset "1-component STL file 0-idx" begin
@@ -144,9 +144,9 @@ end
     @test geom[1].cells[1] == [0, 1, 2]
     @test geom[1].cells[end] == [5, 6, 4]
 
-    # setZeroBased!(geom[1]; value=false)
-    # @test geom[1].cells[1] == [1, 2, 3]
-    # @test geom[1].cells[end] == [6, 7, 5]
+    setZeroBased!(geom[1]; value=false)
+    @test geom[1].cells[1] == [1, 2, 3]
+    @test geom[1].cells[end] == [6, 7, 5]
 end
 
 @testset "2-component STL file      " begin

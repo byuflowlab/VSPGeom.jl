@@ -9,7 +9,7 @@ OpenVSP Degenerate Geometry import tool
 =#
 module VSPGeom
 export VSPComponent, readDegenGeom, degenGeomSize
-export TriMesh, readSTL, getVertices
+export TriMesh, readSTL, getVertices, setZeroBased!
 
 using CSV, DataFrames
 
@@ -52,7 +52,7 @@ end
 - `name::String`: Name
 - `ncells::Int`: No. of cells
 - `normals::Vector{Vector{Float64}}`: Vector of normals for each cell
-- `zeroBased::Bool`: If true, indices in connectivity information have zero-based indexing
+- `zeroBased::Vector{Bool}`: If true, indices in connectivity information have zero-based indexing. A vector to make it mutable.
 - `points::Vector{Vector{Float64}}`: Vector of unique points
 - `cells::Vector{Vector{Int}}`: Vector of vertices for each cell as indices of `points`
 """
@@ -60,7 +60,7 @@ struct TriMesh
     name::String
     ncells::Int
     normals::Vector{Vector{Float64}}
-    zeroBased::Bool
+    zeroBased::Vector{Bool}
     points::Vector{Vector{Float64}}
     cells::Vector{Vector{Int}}
 end
@@ -165,7 +165,7 @@ end
 function _dataToMesh(name::String, vertices, normals; tol::Float64=eps(Float64),
         zeroBased::Bool=false)
     ncells = length(normals)
-    mesh = TriMesh(name, ncells, normals, zeroBased)
+    mesh = TriMesh(name, ncells, normals, [zeroBased])
     # Get list of unique points
     for p in vertices
         if !_isinside(p, mesh.points, tol)
@@ -336,30 +336,29 @@ Obtain vertices of a cell from a mesh
 function getVertices(mesh::TriMesh, icell::Int)
     vtxs = [Vector{Float64}(undef, 3) for _ in 1:3]
     idxs = mesh.cells[icell]
-    idxOffset = mesh.zeroBased ? 1 : 0
+    idxOffset = mesh.zeroBased[1] ? 1 : 0
     for i in 1:3
         vtxs[i] = mesh.points[idxs[i]+idxOffset]
     end
     return vtxs
 end
 
-# The following function will only work if TriMesh is mutable
-# """
-#     setZeroBased!(mesh::TriMesh; zeroBased::Bool=true)
-#
-# Set connectivity information to be 0 or 1 based numbering.
-#
-# **Arguments**
-# - `mesh::TriMesh`: [`TriMesh`](@ref) object
-# - `value::Bool`: Value of the variable zeroBased. Set `true` to use zero-based numbering
-# """
-# function setZeroBased!(mesh::TriMesh; value::Bool=true)
-#     if mesh.zeroBased != value
-#         idxOffset = value ? -1 : 1
-#         for i in 1:length(mesh.cells)
-#             mesh.cells[i] = mesh.cells[i] .+ idxOffset
-#         end
-#         mesh.zeroBased = value
-#     end
-# end
+"""
+    setZeroBased!(mesh::TriMesh; value::Bool=true)
+
+Set connectivity information to be 0 or 1 based numbering.
+
+**Arguments**
+- `mesh::TriMesh`: [`TriMesh`](@ref) object
+- `value::Bool`: Value of the variable zeroBased. Set `true` to use zero-based numbering
+"""
+function setZeroBased!(mesh::TriMesh; value::Bool=true)
+    if mesh.zeroBased[1] != value
+        idxOffset = value ? -1 : 1
+        for i in 1:length(mesh.cells)
+            mesh.cells[i] = mesh.cells[i] .+ idxOffset
+        end
+        mesh.zeroBased[1] = value
+    end
+end
 end

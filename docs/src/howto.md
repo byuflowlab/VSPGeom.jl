@@ -100,3 +100,15 @@ println(vtxs[1])
 println(vtxs[2])
 println(vtxs[3])
 ```
+
+### STL Connectivity information
+When an STL file is read, `VSPGeom` also populates the connectivity information for each of the cells. This information is stored in `TriMesh.cells` as integer indices. For example, the vertex indices for, say the 14th cell, can be displayed as shown below.
+```@example 2
+geom[1].cells[14]
+```
+By default, the indices start from 1, which is conventional for arrays in Julia. However, this may be switched to zero-based numbering using the `setZeroBased!` function as shown below. This provision is useful if the connectivity indices require to be written to a format that uses zero-numbering like the VTK format.
+```@example 2
+setZeroBased!(geom[1]; value=true)
+geom[1].cells[14]
+```
+The [`getVertices`](@ref) function will return the right vertices no matter which convention is used for the index numbering.

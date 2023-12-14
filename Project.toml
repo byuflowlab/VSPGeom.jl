@@ -1,7 +1,7 @@
 name = "VSPGeom"
 uuid = "9b3f6a95-fce2-4bc5-94a2-f99b39986ea6"
 authors = ["cibinjoseph <cibinjoseph92@gmail.com>"]
-version = "0.6.1"
+version = "0.6.2"
 
 [deps]
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"

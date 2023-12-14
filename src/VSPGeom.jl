@@ -9,9 +9,9 @@ OpenVSP Degenerate Geometry import tool
 =#
 module VSPGeom
 export VSPComponent, readDegenGeom, degenGeomSize
-export TriMesh, readSTL, getVertices, setZeroBased!
+export TriMesh, readSTL, getVertices, setZeroBased!, getVTKElements
 
-using CSV, DataFrames
+using CSV, DataFrames, WriteVTK
 
 """
     VSPComponent(name::String)
@@ -360,5 +360,30 @@ function setZeroBased!(mesh::TriMesh; value::Bool=true)
         end
         mesh.zeroBased[1] = value
     end
+end
+
+"""
+    getVTKElements(mesh::TriMesh)
+
+Convenience function that returns the datastructures `points` and `cells` required to write to a VTK file using the WriteVTK package. The user may write out a VTK file using,
+```
+WriteVTK.vtk_grid(filename, points, cells) do vtk
+end
+```
+
+**Arguments**
+- `mesh::TriMesh`: [`TriMesh`](@ref) object
+
+**Returns**
+- `points::Array{Float64}`: Array of coordinates in the STL mesh
+- `mesh::Array{meshCell}`: Array of MeshCell objects that WriteVTK uses
+"""
+function getVTKElements(mesh::TriMesh)
+    points = reduce(hcat, mesh.points)
+    cells = Vector{MeshCell}(undef, mesh.ncells)
+    for i in 1:mesh.ncells
+        cells[i] = MeshCell(VTKCellTypes.VTK_TRIANGLE, mesh.cells[i])
+    end
+    return points, cells
 end
 end

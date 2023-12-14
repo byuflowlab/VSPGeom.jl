@@ -117,6 +117,19 @@ end
     setZeroBased!(geom[1]; value=true)
     @test geom[1].cells[1] == [0, 1, 2]
     @test geom[1].cells[end] == [5, 6, 4]
+
+    # Check getVTKElements
+    points, cells = getVTKElements(geom[1])
+    points_true = [
+                   0.0  1.0  1.0  0.0  0.0  0.0  1.0  1.0
+                   0.0  1.0  0.0  1.0  1.0  0.0  1.0  0.0
+                   0.0  0.0  0.0  0.0  1.0  1.0  1.0  1.0
+                  ]
+    @test points_true ≈ points
+
+    for i in 1:geom[1].ncells
+        @test cells[i].connectivity == geom[1].cells[i]
+    end
 end
 
 @testset "1-component STL file 0-idx" begin

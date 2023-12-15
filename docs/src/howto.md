@@ -112,3 +112,16 @@ setZeroBased!(geom[1]; value=true)
 geom[1].cells[14]
 ```
 The [`getVertices`](@ref) function will return the right vertices no matter which convention is used for the index numbering.
+
+### Writing out a VTK geometry file
+VSPGeom provides the convenience function [`getVTKElements`](@ref) that enables easy writing out of VTK files using the [`WriteVTK.jl`](https://github.com/JuliaVTK/WriteVTK.jl) package. An example using this function is provided below.
+```@example 2
+points, cells = getVTKElements(geom[1])
+
+VSPGeom.WriteVTK.vtk_grid("fuselage", points, cells) do vtk
+  # This creates a sample scalar field dataset with random numbers
+  vtk["myfield"] = rand(geom[1].ncells)
+end
+```
+A screenshot of this VTK file visualized in Paraview is shown below.
+![FuselageParaview](assets/fuselage.png)

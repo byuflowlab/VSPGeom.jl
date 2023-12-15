@@ -381,8 +381,9 @@ end
 function getVTKElements(mesh::TriMesh)
     points = reduce(hcat, mesh.points)
     cells = Vector{MeshCell}(undef, mesh.ncells)
+    zeroidx = mesh.zeroBased[] ? 1 : 0
     for i in 1:mesh.ncells
-        cells[i] = MeshCell(VTKCellTypes.VTK_TRIANGLE, mesh.cells[i])
+        cells[i] = MeshCell(VTKCellTypes.VTK_TRIANGLE, mesh.cells[i] .+ zeroidx)
     end
     return points, cells
 end

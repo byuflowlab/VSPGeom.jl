@@ -33,3 +33,7 @@ getVertices
 ```@docs
 setZeroBased!
 ```
+
+```@docs
+getVTKElements
+```

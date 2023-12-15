@@ -114,10 +114,6 @@ end
     @test geom[1].cells[1] == [1, 2, 3]
     @test geom[1].cells[end] == [6, 7, 5]
 
-    setZeroBased!(geom[1]; value=true)
-    @test geom[1].cells[1] == [0, 1, 2]
-    @test geom[1].cells[end] == [5, 6, 4]
-
     # Check getVTKElements
     points, cells = getVTKElements(geom[1])
     points_true = [
@@ -129,6 +125,17 @@ end
 
     for i in 1:geom[1].ncells
         @test cells[i].connectivity == geom[1].cells[i]
+    end
+
+    # Check zero based indexing
+    setZeroBased!(geom[1]; value=true)
+    @test geom[1].cells[1] == [0, 1, 2]
+    @test geom[1].cells[end] == [5, 6, 4]
+
+    # Check getVTKElements with zero based indexing
+    points, cells = getVTKElements(geom[1])
+    for i in 1:geom[1].ncells
+        @test cells[i].connectivity == geom[1].cells[i] .+ 1
     end
 end
 

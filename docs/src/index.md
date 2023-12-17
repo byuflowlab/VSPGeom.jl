@@ -6,14 +6,15 @@
 
 **Features**:
 
-- Import geometry from OpenVSP DegenGeom file
-- Import geometry from ASCII STL file
-- Import geometry from OpenVSP Tagged Multi solid STL file
+Import geometry from:
+  - OpenVSP DegenGeom files
+  - ASCII STL files
+  - OpenVSP Tagged Multi solid STL files
 
 **Installation**:
 
 ```julia
-pkg> add https://github.com/byuflowlab/VSPGeom.jl.git
+pkg> add VSPGeom
 ```
 
 **Documentation**:
